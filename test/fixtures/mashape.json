@@ -1,0 +1,37 @@
+{
+  "docs": [
+    {
+      "terms": [
+        {
+          "count": 1,
+          "term": "meals",
+          "id": "af74d302b526b714ceb624cacd0bb9670b0462d0"
+        },
+        {
+          "count": 1,
+          "term": "restaurant",
+          "id": "84f4966b50704820129d35025588feac9a9c1485"
+        }
+      ],
+      "language": "en",
+      "sentiment": [
+        {
+          "polarity": "pos",
+          "text": "and the meals have been ok"
+        },
+        {
+          "polarity": "neg",
+          "text": "but this time we were deeply disappointed."
+        }
+      ],
+      "doc_text": "<s id=\"0\"> We have visited this <span id=\"84f4966b50704820129d35025588feac9a9c1485\" class=\"term\">restaurant</span> a few times in the past, <c sentiment=\"pos\" id=\"1\">and the <span id=\"af74d302b526b714ceb624cacd0bb9670b0462d0\" class=\"term\">meals</span> have been ok</c>, <c sentiment=\"neg\" id=\"2\">but this time we were deeply disappointed.</c></s>",
+      "sentiment_scores": {
+        "neg": 34.8,
+        "neu": 42.8,
+        "pos": 22.4
+      },
+      "doc_id": "0"
+    }
+  ],
+  "warnings": []
+}
