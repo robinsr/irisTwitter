@@ -9,9 +9,6 @@ var tweetFixture = require( './fixtures/tweet.json');
 var mashapeFixture = require( './fixtures/mashape.json');
 
 var nock = require( 'nock' );
-var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
-              .post( '/' )
-              .reply( mashapeFixture )
 
 describe( 'twitter', function () {
 
@@ -44,6 +41,10 @@ describe( 'twitter', function () {
 
   describe( '#getSentiment', function () {
     it( 'should send tweet text to mashape api', function (done) {
+      var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
+              .post( '/' )
+              .reply( mashapeFixture )
+
       twitter.getSentiment( {
         text: 'Test Text',
         location: {}
@@ -55,9 +56,47 @@ describe( 'twitter', function () {
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].lang' );
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].sentiment' );
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].sentiment_scores' );
+
         done();
       })
       .catch( done );
+    } );
+
+
+    it( 'should handle a 400 error', function (done) {
+      var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
+              .post( '/' )
+              .reply( 400, '400 Error' )
+
+      twitter.getSentiment( {
+        text: 'Test Text',
+        location: {}
+      } )
+      .then( function (  ) {
+        done( new Error( 'Did not handle 500' ) );
+      })
+      .catch( function ( err )  {
+        expect( err.message ).to.equal( '400 Error' );
+        done();
+      } );
+    } );
+
+    it( 'should handle a 500 error', function (done) {
+      var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
+              .post( '/' )
+              .reply( 500, '500 Error' )
+
+      twitter.getSentiment( {
+        text: 'Test Text',
+        location: {}
+      } )
+      .then( function (  ) {
+        done( new Error( 'Did not handle 500' ) );
+      })
+      .catch( function ( err )  {
+        expect( err.message ).to.equal( '500 Error' );
+        done();
+      } );
     } );
   } );
 
