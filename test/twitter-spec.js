@@ -39,6 +39,27 @@ describe( 'twitter', function () {
     } );
   } );
 
+  describe('#getAnalyzableText', function () {
+    
+    it('should remove a url', function () {
+      var test1 = "So who's trynna go with me!! (: http://t.co/m8ETAWwClV";
+      expect( twitter.getAnalyzableText( test1 ) )
+        .to.equal( "So who's trynna go with me!! (:" );
+    });
+
+    it('shoudl remove a url but leave hashes intact', function () {
+      var test2 = "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling @ Fremont Bridge https://t.co/cn2kZ3IT7g";
+      expect( twitter.getAnalyzableText( test2 ) )
+        .to.equal( "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling @ Fremont Bridge" );
+    });
+
+    it('should remove urls and hashes at the end of a string', function () {
+      var test3 = "Want to work in #Seattle, WA? View our latest opening: http://t.co/LfEvwGXG5H #Healthcare #Job #Jobs #Hiring http://t.co/QtStQsY5XE";
+      expect( twitter.getAnalyzableText( test3 ) )
+       .to.equal( "Want to work in #Seattle, WA? View our latest opening:" );
+    });
+  });
+
   describe( '#getSentiment', function () {
     it( 'should send tweet text to mashape api', function (done) {
       var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
