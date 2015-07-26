@@ -67,10 +67,11 @@ describe( 'twitter', function () {
               .reply( mashapeFixture )
 
       twitter.getSentiment( {
-        text: 'Test Text',
+        text: 'Test Text #endHash #endHash2 http://t.co.com/path',
         location: {}
       } )
       .then( function ( tweetWithSentiment ) {
+        expect( tweetWithSentiment ).to.have.property( 'analyzableText', 'Test Text' );
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle' );
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs' );
         expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].terms' );
