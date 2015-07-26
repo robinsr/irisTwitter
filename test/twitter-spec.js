@@ -47,10 +47,17 @@ describe( 'twitter', function () {
         .to.equal( "So who's trynna go with me!! (:" );
     });
 
-    it('shoudl remove a url but leave hashes intact', function () {
-      var test2 = "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling @ Fremont Bridge https://t.co/cn2kZ3IT7g";
+    it('should remove a url but leave hashes intact', function () {
+      var test2 = "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling at Fremont Bridge https://t.co/cn2kZ3IT7g";
       expect( twitter.getAnalyzableText( test2 ) )
-        .to.equal( "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling @ Fremont Bridge" );
+        .to.equal( "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling at Fremont Bridge" );
+    });
+
+    //TODO: write code for this test:
+    it('should remove trailing "@"', function () {
+      var test2 = "Of course the #FremontBridge goes up when I'm cycling #seattlecycling @ Fremont Bridge https://t.co/cn2kZ3IT7g";
+      expect( twitter.getAnalyzableText( test2 ) )
+        .to.equal( "Of course the #FremontBridge goes up when I'm cycling" );
     });
 
     it('should remove urls and hashes at the end of a string', function () {
