@@ -70,7 +70,19 @@ describe( 'twitter', function () {
       var testText = "Doing this thing at this place #funTimes (@ Some Place Seattle, WA)";
       expect( twitter.getAnalyzableText( testText ) )
        .to.equal( "Doing this thing at this place" );
-    })
+    });
+
+    it('should remove truncated checkins', function () {
+      var testText = "Doing this thing at this place #funTimes @ Some Place...";
+      expect( twitter.getAnalyzableText( testText ) )
+       .to.equal( "Doing this thing at this place" );
+    });
+
+    it('should remove really truncated checkins', function () {
+      var testText = "Doing this thing at this place #funTimes @...";
+      expect( twitter.getAnalyzableText( testText ) )
+       .to.equal( "Doing this thing at this place" );
+    });
 
     it('should remove urls and hashes at the end of a string', function () {
       var testText = "Want to work in #Seattle, WA? View our latest opening: http://t.co/LfEvwGXG5H #Healthcare #Job #Jobs #Hiring http://t.co/QtStQsY5XE";
