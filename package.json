@@ -16,6 +16,7 @@
     "when": "^3.7.3"
   },
   "devDependencies": {
+    "async": "^1.4.0",
     "chai": "^3.2.0",
     "chai-datetime": "^1.4.0",
     "mocha": "^2.2.5",

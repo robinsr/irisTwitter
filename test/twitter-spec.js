@@ -1,46 +1,137 @@
+/*
+  Env
+ */
+process.env.MONGO_URL = 'mongodb://localhost/noobjs_test';
+
+/*
+  Module dependencies
+ */
+var nock =    require( 'nock' );
+var async =   require( 'async' );
+var twitter = require( './../lib/twitter' );
+
+/*
+  Prepare DB
+ */
+var mongojs =  require( 'mongojs' );
+var db = mongojs( process.env.MONGO_URL, [ 'socialDocs', 'skyttleDocs', 'geoDocs' ] );
+
+/*
+  Prepare Chai
+ */
 var chai = require( 'chai' );
+var expect = chai.expect;
 chai.use( require( 'chai-datetime' ) );
 
-var expect = chai.expect;
-
-var twitter = require( './../lib/twitter' );
-var tweetFixture = require( './fixtures/tweet.json');
-
+/*
+  Prepare fixtures
+ */
 var mashapeFixture = require( './fixtures/mashape.json');
+var tweetFixture = require( './fixtures/tweet.json');
+tweetFixture._id = new mongojs.ObjectId();
 
-var nock = require( 'nock' );
+/*
+  DB helper function
+ */
+var clearDb = function ( done ) {
+  async.parallel( [
+    function ( cb ) { db.socialDocs.remove( cb ); },
+    function ( cb ) { db.skyttleDocs.remove( cb ); },
+    function ( cb ) { db.geoDocs.remove( cb ); }
+  ], done );
+}
+
 
 describe( 'twitter', function () {
 
+  before( clearDb );
+  after( clearDb );
 
-  describe( '#init', function () {
-    it.skip( 'should establish a stream connection to twitter', function () {
 
+  describe.skip( '#init', function () {
+    it( 'should establish a stream connection to twitter', function () {
     } );
   } );
 
 
-  describe( '#initialTransform', function () {
-    it( 'should transform the tweet fixture to a simple version', function  (done) {
-      twitter.initialTransform( tweetFixture )
-        .then( function ( transform ) {
-          expect( transform ).to.exist;
-          expect( transform ).to.have.property( 'text', 'Along with our new #Twitterbird, we\'ve also updated our Display Guidelines: https://t.co/Ed4omjYs  ^JC' );
-          expect( transform ).property( 'tweetedAt' ).to.equalDate( new Date( tweetFixture.created_at ) );
-          expect( transform ).to.have.property( 'user', 'twitterapi' );
-          expect( transform ).to.have.deep.property( 'location.type', 'Point' );
-          expect( transform ).to.have.deep.property( 'location.coordinates[0]', -75.14310264 );
-          expect( transform ).to.have.deep.property( 'location.coordinates[1]',  40.05701649 );
-          expect( transform ).to.have.deep.property( 'location.lng', -75.14310264 );
-          expect( transform ).to.have.deep.property( 'location.lat', 40.05701649 );
-          done();
+  describe( '#insertIntoSocialDocs', function () {
+    it( 'should transform the tweet fixture to a simple version and insert into socialDocs', function  (done) {
+      twitter.insertIntoSocialDocs( tweetFixture )
+        .then( function ( ) {
+          db.socialDocs.findOne({}, function ( err, doc ) {
+            expect( err ).to.not.exist;
+            expect( doc ).to.exist;
+            expect( doc._id.toString() ).to.equal( tweetFixture._id.toString() );
+            expect( doc ).to.have.property( 'text', 'Along with our new #Twitterbird, we\'ve also updated our Display Guidelines: https://t.co/Ed4omjYs  ^JC' );
+            expect( doc ).property( 'createdAt' ).to.equalDate( new Date( tweetFixture.created_at ) );
+            expect( doc ).to.have.property( 'user', 'twitterapi' );
+            expect( doc ).to.have.property( 'originId', tweetFixture.id );
+            expect( doc ).to.have.property( 'type',  'tweet' );
+            done();
+          } );
         } )
         .catch( done );
     } );
   } );
 
-  describe('#getAnalyzableText', function () {
+  describe( '#insertIntoGeoDocs', function () {
+    it( 'should not make the insert because tweet has no geo data', function ( done ) {
+      twitter.insertIntoGeoDocs( {}, {} )
+        .then( function () {
+          db.geoDocs.findOne({}, function ( err, doc ) {
+            expect( err ).to.not.exist;
+            expect( doc ).to.not.exist;
+            done();
+          } );
+        } )
+        .catch( done )
+    } );
 
+
+    it( 'should not make the insert because no sentiment', function ( done ) {
+      twitter.insertIntoGeoDocs( {}, null )
+        .then( function () {
+          db.geoDocs.findOne({}, function ( err, doc ) {
+            expect( err ).to.not.exist;
+            expect( doc ).to.not.exist;
+            done();
+          } );
+        } )
+        .catch( done )
+    } );
+
+
+    it( 'should insert data into geoDocs', function ( done ) {
+      var sentimentScores = {
+        pos: 0,
+        neg: 1,
+        neu: 2
+      };
+
+      twitter.insertIntoGeoDocs( tweetFixture, sentimentScores )
+        .then( function () {
+          db.geoDocs.findOne({}, function ( err, doc ) {
+            expect( err ).to.not.exist;
+            expect( doc ).to.exist;
+            expect( doc ).to.have.property( 'type',  'tweet' );
+            expect( doc ).to.have.property( 'socialId' );
+            expect( doc.socialId.toString() ).to.equal( tweetFixture._id.toString() );
+            expect( doc ).to.have.property( 'analyzableText',  twitter.getAnalyzableText( tweetFixture.text ) );
+            expect( doc ).property( 'createdAt' ).to.equalDate( new Date( tweetFixture.created_at ) );
+            expect( doc ).to.have.deep.property( 'location.type', 'Point' );
+            expect( doc ).to.have.deep.property( 'location.coordinates[0]', tweetFixture.coordinates.coordinates[0] );
+            expect( doc ).to.have.deep.property( 'location.coordinates[1]', tweetFixture.coordinates.coordinates[1] );
+            expect( doc ).to.have.property( 'neg',  sentimentScores.neg );
+            expect( doc ).to.have.property( 'neu',  sentimentScores.neu );
+            expect( doc ).to.have.property( 'pos',  sentimentScores.pos );
+            done();
+          } );
+        } )
+        .catch( done )
+    } );
+  } );
+
+  describe('#getAnalyzableText', function () {
     it('should do nothing', function () {
       var testText = "I am a plain tweet";
       expect( twitter.getAnalyzableText( testText ) )
@@ -59,8 +150,7 @@ describe( 'twitter', function () {
         .to.equal( "Of course the #FremontBridge goes up when I'm #cycling #seattlecycling at Fremont Bridge" );
     });
 
-    //TODO: write code for this test:
-    it('should remove trailing "@"', function () {
+    it('should remove trailing checkins "@"', function () {
       var testText = "Of course the #FremontBridge goes up when I'm cycling #seattlecycling @ Fremont Bridge https://t.co/cn2kZ3IT7g";
       expect( twitter.getAnalyzableText( testText ) )
         .to.equal( "Of course the #FremontBridge goes up when I'm cycling" );
@@ -91,41 +181,29 @@ describe( 'twitter', function () {
     });
   });
 
-  describe( '#getSentiment', function () {
-    it( 'should send tweet text to mashape api', function (done) {
+  describe( '#insertIntoSkyttleDocs', function () {
+    it( 'should fail silently because there is no coordinates property', function ( done ) {
       var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
               .post( '/' )
-              .reply( mashapeFixture )
+              .reply( {} )
 
-      twitter.getSentiment( {
-        text: 'Test Text #endHash #endHash2 http://t.co.com/path',
-        location: {}
-      } )
-      .then( function ( tweetWithSentiment ) {
-        expect( tweetWithSentiment ).to.have.property( 'analyzableText', 'Test Text' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].terms' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].lang' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].sentiment' );
-        expect( tweetWithSentiment ).to.have.deep.property( 'seintiment.skittle.docs[0].sentiment_scores' );
-
+      twitter.insertIntoSkyttleDocs( {} )
+      .then( function ( scores ) {
+        expect( scores ).to.not.exist;
+        expect( mashape.isDone() ).to.not.be.ok;
+        nock.cleanAll();
         done();
       })
       .catch( done );
     } );
-
 
     it( 'should handle a 400 error', function (done) {
       var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
               .post( '/' )
               .reply( 400, '400 Error' )
 
-      twitter.getSentiment( {
-        text: 'Test Text',
-        location: {}
-      } )
-      .then( function (  ) {
+      twitter.insertIntoSkyttleDocs( tweetFixture )
+      .then( function () {
         done( new Error( 'Did not handle 500' ) );
       })
       .catch( function ( err )  {
@@ -139,17 +217,40 @@ describe( 'twitter', function () {
               .post( '/' )
               .reply( 500, '500 Error' )
 
-      twitter.getSentiment( {
-        text: 'Test Text',
-        location: {}
-      } )
-      .then( function (  ) {
+      twitter.insertIntoSkyttleDocs( tweetFixture )
+      .then( function () {
         done( new Error( 'Did not handle 500' ) );
       })
       .catch( function ( err )  {
         expect( err.message ).to.equal( '500 Error' );
         done();
       } );
+    } );
+
+    it( 'should send tweet text to mashape api', function ( done ) {
+      var mashape = nock( 'https://sentinelprojects-skyttle20.p.mashape.com' )
+              .post( '/' )
+              .reply( 200, mashapeFixture )
+
+      twitter.insertIntoSkyttleDocs( tweetFixture )
+      .then( function ( sentimentScores ) {
+        expect( sentimentScores ).to.exist;
+        db.skyttleDocs.findOne( {}, function ( err, doc ) {
+          expect( err ).to.not.exist;
+          expect( doc ).to.exist;
+          expect( doc ).to.have.property( 'socialId' );
+          expect( doc.socialId.toString() ).to.equal( tweetFixture._id.toString() );
+          expect( doc ).to.have.property( 'terms' );
+          expect( doc ).to.have.property( 'language' );
+          expect( doc ).to.have.property( 'sentiment' );
+          expect( doc ).to.have.property( 'sentiment_scores' );
+          expect( doc ).to.have.deep.property( 'sentiment_scores.neg', mashapeFixture.docs[0].sentiment_scores.neg );
+          expect( doc ).to.have.deep.property( 'sentiment_scores.pos', mashapeFixture.docs[0].sentiment_scores.pos );
+          expect( doc ).to.have.deep.property( 'sentiment_scores.neu', mashapeFixture.docs[0].sentiment_scores.neu );
+          done();
+        } );
+      } )
+      .catch( done );
     } );
   } );
 
