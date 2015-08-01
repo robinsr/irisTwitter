@@ -1,0 +1,176 @@
+[
+
+{
+    "_id" : "55bd319fb19e0a0300e00896",
+    "text" : "@itastepaint #beech",
+    "tweetedAt" : "2015-08-01T20:52:46.000Z",
+    "user" : "cpedraza"
+},
+
+
+{
+    "_id" : "55bd319cb19e0a0300e00895",
+    "text" : "Sea spectacular view which is very relaxed splendor of the Sun of him http://t.co/1dIPplXBZp",
+    "tweetedAt" : "2015-08-01T20:52:43.000Z",
+    "user" : "GapyImad"
+},
+
+
+{
+    "_id" : "55bd3194b19e0a0300e00894",
+    "text" : "YOU SLAY GIRL!!! WHY ARE YOU SO PRETTY??😻😻😻😻😻 https://t.co/tQLUOKboMd",
+    "tweetedAt" : "2015-08-01T20:52:36.000Z",
+    "user" : "ItsAhdreeee"
+},
+
+
+{
+    "_id" : "55bd3190b19e0a0300e00893",
+    "text" : "Blue Angels by toddnelmes on phhhoto #phhhoto @ Jefferson Park https://t.co/OXHQOxKCCf",
+    "tweetedAt" : "2015-08-01T20:52:32.000Z",
+    "user" : "toddnelmes",
+    "location" : {
+        "type" : "Point",
+        "coordinates" : [ 
+            -122.307648, 
+            47.569572
+        ],
+        "lng" : -122.307648,
+        "lat" : 47.569572
+    },
+    "analyzableText" : "Blue Angels by toddnelmes on phhhoto",
+    "sentiment" : {
+        "skyttle" : {
+            "docs" : [ 
+                {
+                    "doc_id" : "0",
+                    "doc_text" : "<doc><s id=\"0\"><k id=\"4a0e248d85e74092abb5f9df3c1e30429d2da4de\" class=\"entity\">Blue Angels</k> by <k id=\"fe37e5ca801657dac98167efd22d8b199499db32\" class=\"term\">toddnelmes</k> on <k id=\"e2496c01e1f161f6956f44c8c43237c9ee270a6e\" class=\"term\">photo</k></s></doc>",
+                    "language" : "en",
+                    "sentiment" : [],
+                    "sentiment_scores" : {
+                        "neg" : 0,
+                        "neu" : 100,
+                        "pos" : 0
+                    },
+                    "terms" : [ 
+                        {
+                            "count" : 1,
+                            "id" : "e2496c01e1f161f6956f44c8c43237c9ee270a6e",
+                            "term" : "photo"
+                        }, 
+                        {
+                            "count" : 1,
+                            "id" : "fe37e5ca801657dac98167efd22d8b199499db32",
+                            "term" : "toddnelmes"
+                        }, 
+                        {
+                            "count" : 1,
+                            "id" : "4a0e248d85e74092abb5f9df3c1e30429d2da4de",
+                            "term" : "Blue Angels"
+                        }
+                    ]
+                }
+            ],
+            "warnings" : []
+        }
+    }
+},
+
+
+{
+    "_id" : "55bd318eb19e0a0300e00892",
+    "text" : "Want to work at Oracle? We're #hiring in #Bellevue, WA! Click for details: http://t.co/XdjH1Sc1C9 #Sales #Job #Jobs #CareerArc",
+    "tweetedAt" : "2015-08-01T20:52:30.000Z",
+    "user" : "tmj_sea_sales",
+    "location" : {
+        "type" : "Point",
+        "coordinates" : [ 
+            -122.200679, 
+            47.610377
+        ],
+        "lng" : -122.200679,
+        "lat" : 47.610377
+    },
+    "analyzableText" : "Want to work at Oracle? We're #hiring in #Bellevue, WA! Click for details:",
+    "sentiment" : {
+        "skyttle" : {
+            "docs" : [ 
+                {
+                    "doc_id" : "0",
+                    "doc_text" : "<doc><s id=\"0\">Want to work at <k id=\"7eff9828587cee9f9fd5459725e9e18e5ef87a6c\" class=\"entity\">Oracle</k>?</s> <s id=\"1\">We're # hiring in # <k id=\"0c51b05276e8815ad4fc107026206576db28105d\" class=\"entity\">Bellevue</k>, <k id=\"5445ec24ba095cccdb2b754e68ae5d9be8802ef5\" class=\"entity\">WA</k>!</s> <s id=\"2\">Click for <k id=\"aeaec4184977e6f01b62fe1891c0dce8bb1c2d2f\" class=\"term\">details</k>:</s></doc>",
+                    "language" : "en",
+                    "sentiment" : [],
+                    "sentiment_scores" : {
+                        "neg" : 0,
+                        "neu" : 100,
+                        "pos" : 0
+                    },
+                    "terms" : [ 
+                        {
+                            "count" : 1,
+                            "id" : "7eff9828587cee9f9fd5459725e9e18e5ef87a6c",
+                            "term" : "Oracle"
+                        }, 
+                        {
+                            "count" : 1,
+                            "id" : "0c51b05276e8815ad4fc107026206576db28105d",
+                            "term" : "Bellevue"
+                        }, 
+                        {
+                            "count" : 1,
+                            "id" : "aeaec4184977e6f01b62fe1891c0dce8bb1c2d2f",
+                            "term" : "details"
+                        }, 
+                        {
+                            "count" : 1,
+                            "id" : "5445ec24ba095cccdb2b754e68ae5d9be8802ef5",
+                            "term" : "WA"
+                        }
+                    ]
+                }
+            ],
+            "warnings" : []
+        }
+    }
+},
+
+
+{
+    "_id" : "55bd318bb19e0a0300e00891",
+    "text" : "@jiselle_santos then someone in the Columbus area is claiming to be his dentist.. weird",
+    "tweetedAt" : "2015-08-01T20:52:27.000Z",
+    "user" : "mangolakos"
+},
+
+
+{
+    "_id" : "55bd3188b19e0a0300e00890",
+    "text" : "Seafair weekend 😋",
+    "tweetedAt" : "2015-08-01T20:52:24.000Z",
+    "user" : "thissguychris"
+},
+
+
+{
+    "_id" : "55bd3182b19e0a0300e0088e",
+    "text" : "Starbucks Reserve coffee being packaged and sent out to America! http://t.co/tGaxZmCwqw",
+    "tweetedAt" : "2015-08-01T20:52:18.000Z",
+    "user" : "jeffwilcox"
+},
+
+
+{
+    "_id" : "55bd3182b19e0a0300e0088f",
+    "text" : "@msrb85 They @MyLittlePony also said his number will be 1234567890 so just make sure you have the numbers right!",
+    "tweetedAt" : "2015-08-01T20:52:18.000Z",
+    "user" : "ASR_Nick"
+},
+
+
+{
+    "_id" : "55bd317cb19e0a0300e0088d",
+    "text" : "Obama pay for my college",
+    "tweetedAt" : "2015-08-01T20:52:12.000Z",
+    "user" : "KSchimberg"
+}
+]
