@@ -7,7 +7,7 @@ process.env.MONGO_URL = 'mongodb://localhost/noobjs_test';
   Module dependencies
  */
 var async =   require( 'async' );
-var tweetsToSocial = require( './../../lib/transforms/tweetsToSocial' );
+var transform = require( './../../lib/transforms/transform' );
 
 /*
   Prepare DB
@@ -41,16 +41,42 @@ var addFixtureToDb = function ( done ) {
   db.tweets.insert( tweetsFixture, done );
 }
 
+var testTransform = function ( tweet ) {
+  return {
+    _id: tweet._id,
+    type: 'tweet',
+    originId: null,
+    text: tweet.text,
+    createdAt: new Date( tweet.tweetedAt ),
+    user: tweet.user
+  }
+}
 
-describe( 'tweetsToSocial', function () {
+var testOpts = {
+  targetDb: 'socialDocs',
+  sourceDb: 'tweets',
+  transform: testTransform,
+  perPage: 3
+}
 
-  before( clearDb );
+
+describe( 'transform', function () {
+
+  before( function ( done ) {
+    async.series([ clearDb, function ( cb ) {
+      transform.prepare( testOpts );
+      cb( null );
+    }], done );
+  } );
+
   after( clearDb );
 
-  describe( '#insertIntoSocial()', function () {
+  describe( '#insertIntoNewDatabase()', function () {
     it( 'should insert into social docs as expected', function ( done ) {
+      
       var testTweet = tweetsFixture[9];
-      tweetsToSocial.insertIntoSocial( testTweet )
+
+      transform.insertIntoNewDatabase( testTweet, testOpts )
       .then( function () {
         db.socialDocs.find({}, function ( err, response ) {
           expect( err ).to.not.exist;
@@ -72,13 +98,11 @@ describe( 'tweetsToSocial', function () {
   describe( '#transform()', function () {
     before( addFixtureToDb );
     it( 'should insert many tweets into social docs', function ( done ) {
-      tweetsToSocial.transform( {
-        perPage: 2
-      } )
+      transform.transform( testOpts )
       .then( function () {
         db.socialDocs.count({}, function ( err, count ){
           expect( err ).to.not.exist
-          expect( count ).to.equal( 2 );
+          expect( count ).to.equal( 3 );
           done();
         })
       } )
@@ -90,7 +114,7 @@ describe( 'tweetsToSocial', function () {
   describe( '#getDatabaseTotals()', function () {
     before( addFixtureToDb );
     it( 'should return database totals do something', function ( done ) {
-      tweetsToSocial.getDatabaseTotals()
+      transform.getDatabaseTotals( testOpts )
       .then( function ( total ) {
         expect( total ).to.equal( 10 );
         done();
@@ -102,7 +126,7 @@ describe( 'tweetsToSocial', function () {
 
   describe( '#getChunkedArray()', function () {
     it( 'should return an array of options to map to #transform()', function ( done ) {
-      var arr = tweetsToSocial.getChunkedArray( 10, 3 );
+      var arr = transform.getChunkedArray( 10, testOpts );
 
       expect( arr ).to.exist;
       expect( arr.length ).to.equal( 4 );
@@ -123,8 +147,9 @@ describe( 'tweetsToSocial', function () {
 
   describe('#init', function () {
     before( addFixtureToDb );
+
     it('should add all tweets to socialDocs through paging', function ( done ) {
-      tweetsToSocial.init( 2 )
+      transform.init( testOpts )
       .then( function () {
         db.socialDocs.count({}, function ( err, count ) {
           expect( err ).to.not.exist;
